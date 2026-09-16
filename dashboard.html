@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — Hope3 Food Manager</title>
+  <meta name="description" content="Daily meal status management dashboard for Hope3 Food Manager.">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body class="page-body">
+
+  <!-- Navigation -->
+  <nav class="nav" role="navigation" aria-label="Main navigation">
+    <a href="dashboard.html" class="nav-brand" aria-label="Hope3 Food Manager Home">
+      <div class="nav-brand-icon" aria-hidden="true">🍽️</div>
+      <span class="nav-brand-text">Hope3 Food Manager</span>
+    </a>
+
+    <ul class="nav-links" role="list">
+      <li>
+        <a href="dashboard.html" class="nav-link active" aria-current="page">
+          <span aria-hidden="true">📋</span>
+          <span>Dashboard</span>
+        </a>
+      </li>
+      <li>
+        <a href="history.html" class="nav-link">
+          <span aria-hidden="true">📜</span>
+          <span>History</span>
+        </a>
+      </li>
+      <li>
+        <a href="members.html" class="nav-link">
+          <span aria-hidden="true">👥</span>
+          <span>Members</span>
+        </a>
+      </li>
+    </ul>
+
+    <div class="nav-right">
+      <span class="nav-manager-name">
+        Signed in as <span id="navManagerName">…</span>
+      </span>
+      <button class="btn-logout" id="btnLogout" type="button" aria-label="Logout">
+        <span aria-hidden="true">⏻</span> Logout
+      </button>
+    </div>
+  </nav>
+
+  <!-- Main content -->
+  <main class="main-content" id="main">
+
+    <!-- Page header -->
+    <div class="page-header">
+      <h1 class="page-title">Daily Meal Status</h1>
+      <p class="page-subtitle">Record and manage team meal statuses for the selected date.</p>
+    </div>
+
+    <!-- Date Navigator -->
+    <div class="date-navigator" role="navigation" aria-label="Date navigation">
+      <button class="btn-nav-arrow" id="btnPrevDay" title="Previous day" aria-label="Go to previous day">&#8592;</button>
+
+      <div class="date-display" id="dateDisplay" title="Click to open date picker" role="button" tabindex="0" aria-label="Selected date">
+        <div>
+          <div class="date-text" id="dateText">—</div>
+          <div class="date-day-label" id="dateDayLabel">—</div>
+        </div>
+        <span aria-hidden="true">📅</span>
+      </div>
+
+      <!-- Hidden date picker input triggered by the display button -->
+      <input
+        type="date"
+        id="datePicker"
+        class="date-picker-input"
+        aria-label="Pick a date"
+        tabindex="-1"
+      >
+
+      <button class="btn-nav-arrow" id="btnNextDay" title="Next day" aria-label="Go to next day">&#8594;</button>
+      <button class="btn-today" id="btnToday" type="button">Today</button>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="summary-cards" role="region" aria-label="Meal summary">
+
+      <div class="summary-card summary-card-breakfast" id="summaryBreakfast">
+        <div class="summary-card-header">
+          <div class="summary-meal-icon icon-breakfast" aria-hidden="true">🌅</div>
+          <span class="summary-meal-name">Breakfast</span>
+        </div>
+        <div class="summary-stats">
+          <div class="summary-stat-row">
+            <span class="summary-stat-label">
+              <span class="summary-stat-dot dot-eat"></span> Eat
+            </span>
+            <span class="summary-stat-value" id="bfEat">—</span>
+          </div>
+          <div class="summary-stat-row">
+            <span class="summary-stat-label">
+              <span class="summary-stat-dot dot-not-eat"></span> Not Eat
+            </span>
+            <span class="summary-stat-value" id="bfNotEat">—</span>
+          </div>
+          <div class="summary-stat-row">
+            <span class="summary-stat-label">
+              <span class="summary-stat-dot dot-informed"></span> Informed
+            </span>
+            <span class="summary-stat-value" id="bfInformed">—</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="summary-card summary-card-lunch" id="summaryLunch">
+        <div class="summary-card-header">
+          <div class="summary-meal-icon icon-lunch" aria-hidden="true">☀️</div>
+          <span class="summary-meal-name">Lunch</span>
+        </div>
+        <div class="summary-stats">
+          <div class="summary-stat-row">
+            <span class="summary-stat-label">
+              <span class="summary-stat-dot dot-eat"></span> Eat
+            </span>
+            <span class="summary-stat-value" id="lnEat">—</span>
+          </div>
+          <div class="summary-stat-row">
+            <span class="summary-stat-label">
+              <span class="summary-stat-dot dot-not-eat"></span> Not Eat
+            </span>
+            <span class="summary-stat-value" id="lnNotEat">—</span>
+          </div>
+          <div class="summary-stat-row">
+            <span class="summary-stat-label">
+              <span class="summary-stat-dot dot-informed"></span> Informed
+            </span>
+            <span class="summary-stat-value" id="lnInformed">—</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="summary-card summary-card-dinner" id="summaryDinner">
+        <div class="summary-card-header">
+          <div class="summary-meal-icon icon-dinner" aria-hidden="true">🌙</div>
+          <span class="summary-meal-name">Dinner</span>
+        </div>
+        <div class="summary-stats">
+          <div class="summary-stat-row">
+            <span class="summary-stat-label">
+              <span class="summary-stat-dot dot-eat"></span> Eat
+            </span>
+            <span class="summary-stat-value" id="dnEat">—</span>
+          </div>
+          <div class="summary-stat-row">
+            <span class="summary-stat-label">
+              <span class="summary-stat-dot dot-not-eat"></span> Not Eat
+            </span>
+            <span class="summary-stat-value" id="dnNotEat">—</span>
+          </div>
+          <div class="summary-stat-row">
+            <span class="summary-stat-label">
+              <span class="summary-stat-dot dot-informed"></span> Informed
+            </span>
+            <span class="summary-stat-value" id="dnInformed">—</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <!-- /summary-cards -->
+
+    <!-- Unsaved Changes Banner -->
+    <div class="unsaved-banner" id="unsavedBanner" style="display:none" role="alert" aria-live="polite">
+      <div class="unsaved-text">
+        <span class="unsaved-icon" aria-hidden="true">⚠️</span>
+        <span id="unsavedCount">0 unsaved changes</span>
+        <span class="text-muted text-sm">— press Ctrl+S to save</span>
+      </div>
+      <div class="unsaved-actions">
+        <button class="btn btn-secondary btn-sm" id="btnCancel" type="button">Cancel</button>
+        <button class="btn btn-success btn-sm" id="btnSave" type="button">💾 Save Changes</button>
+      </div>
+    </div>
+
+    <!-- Meal Table -->
+    <div class="table-section" role="region" aria-label="Member meal table">
+      <div class="table-section-header">
+        <div>
+          <div class="table-section-title">Team Meal Status</div>
+          <div class="table-section-subtitle">Click a status to cycle through options. Changes are highlighted.</div>
+        </div>
+        <div class="search-wrap">
+          <span class="search-icon" aria-hidden="true">🔍</span>
+          <input
+            type="search"
+            id="memberSearch"
+            class="form-input search-input"
+            placeholder="Search member…"
+            aria-label="Search members"
+            style="width: 200px"
+          >
+        </div>
+      </div>
+
+      <!-- Loading indicator (hidden by default) -->
+      <div class="loading-overlay" id="tableLoading" style="display:none" aria-busy="true" aria-label="Loading meal data">
+        <div class="spinner"></div>
+      </div>
+
+      <div class="table-wrapper" role="region" aria-label="Meal status table (scroll horizontally if needed)">
+        <table class="meal-table" id="mealTable" aria-label="Member meal statuses">
+          <thead>
+            <tr>
+              <th scope="col">Member</th>
+              <th scope="col" class="th-breakfast">🌅 Breakfast</th>
+              <th scope="col" class="th-lunch">☀️ Lunch</th>
+              <th scope="col" class="th-dinner">🌙 Dinner</th>
+            </tr>
+          </thead>
+          <tbody id="mealTableBody">
+            <!-- Populated by dashboard.js -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <!-- /meal table -->
+
+    <!-- Status legend -->
+    <div class="flex-center gap-md" style="margin-top:var(--space-md);flex-wrap:wrap">
+      <span class="text-xs text-muted">Status legend:</span>
+      <span class="status-badge status-eat" style="cursor:default;pointer-events:none;font-size:12px;min-width:80px">✓ Eat</span>
+      <span class="status-badge status-not-eat" style="cursor:default;pointer-events:none;font-size:12px;min-width:80px">✕ Not Eat</span>
+      <span class="status-badge status-informed" style="cursor:default;pointer-events:none;font-size:12px;min-width:80px">ℹ Informed</span>
+      <span class="status-badge status-not-set" style="cursor:default;pointer-events:none;font-size:12px;min-width:80px">○ Not Set</span>
+    </div>
+
+  </main>
+
+  <!-- Toast notifications -->
+  <div class="toast-container" id="toastContainer" aria-live="polite" aria-label="Notifications"></div>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>

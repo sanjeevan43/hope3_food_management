@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>History & Reports — Hope3 Food Manager</title>
+  <meta name="description" content="View historical meal records and generate reports for Hope3 Food Manager.">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/history.css">
+</head>
+<body class="page-body">
+
+  <!-- Navigation -->
+  <nav class="nav" role="navigation" aria-label="Main navigation">
+    <a href="dashboard.html" class="nav-brand" aria-label="Hope3 Food Manager Home">
+      <div class="nav-brand-icon" aria-hidden="true">🍽️</div>
+      <span class="nav-brand-text">Hope3 Food Manager</span>
+    </a>
+    <ul class="nav-links" role="list">
+      <li><a href="dashboard.html" class="nav-link"><span aria-hidden="true">📋</span><span>Dashboard</span></a></li>
+      <li><a href="history.html"   class="nav-link active" aria-current="page"><span aria-hidden="true">📜</span><span>History</span></a></li>
+      <li><a href="members.html"   class="nav-link"><span aria-hidden="true">👥</span><span>Members</span></a></li>
+    </ul>
+    <div class="nav-right">
+      <span class="nav-manager-name">Signed in as <span id="navManagerName">…</span></span>
+      <button class="btn-logout" id="btnLogout" type="button" aria-label="Logout">⏻ Logout</button>
+    </div>
+  </nav>
+
+  <main class="main-content" id="main">
+
+    <div class="page-header">
+      <h1 class="page-title">History &amp; Reports</h1>
+      <p class="page-subtitle">Search meal records and generate daily or monthly reports.</p>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs" role="tablist" aria-label="Report tabs">
+      <button class="tab-btn active" role="tab" aria-selected="true"  data-tab="tabRecords"     id="tab-records">📜 Records</button>
+      <button class="tab-btn"        role="tab" aria-selected="false" data-tab="tabDayReport"   id="tab-day">📅 Day Report</button>
+      <button class="tab-btn"        role="tab" aria-selected="false" data-tab="tabMonthReport" id="tab-month">📆 Month Report</button>
+    </div>
+
+    <!-- ═══════════════════════ TAB 1: Records ══════════════════════ -->
+    <div class="tab-panel active" id="tabRecords" role="tabpanel" aria-labelledby="tab-records">
+
+      <!-- Filter Panel -->
+      <div class="filter-panel">
+        <div class="filter-panel-header">
+          <div class="filter-panel-title">🔍 Filters</div>
+        </div>
+
+        <!-- Quick filters -->
+        <div class="quick-filters" role="group" aria-label="Quick date filters">
+          <button class="chip quick-chip" data-filter="today">Today</button>
+          <button class="chip quick-chip" data-filter="yesterday">Yesterday</button>
+          <button class="chip quick-chip" data-filter="thisWeek">This Week</button>
+          <button class="chip quick-chip" data-filter="thisMonth">This Month</button>
+        </div>
+
+        <!-- Filter grid -->
+        <div class="filter-grid">
+
+          <div class="form-group">
+            <label class="form-label" for="filterDateType">Date Filter Type</label>
+            <select class="form-select" id="filterDateType">
+              <option value="specific">Specific Date</option>
+              <option value="range">Date Range</option>
+              <option value="dayOfWeek">Day of Week</option>
+            </select>
+          </div>
+
+          <!-- Specific date -->
+          <div class="form-group" id="dateSpecificGroup">
+            <label class="form-label" for="filterDate">Date</label>
+            <input type="date" class="form-input" id="filterDate" aria-label="Filter by specific date">
+          </div>
+
+          <!-- Date range -->
+          <div class="form-group d-none" id="dateRangeGroup" style="grid-column: span 2">
+            <label class="form-label">Date Range</label>
+            <div style="display:flex;gap:8px;align-items:center">
+              <input type="date" class="form-input" id="filterFrom" aria-label="From date" style="flex:1">
+              <span class="text-muted text-sm">to</span>
+              <input type="date" class="form-input" id="filterTo" aria-label="To date" style="flex:1">
+            </div>
+          </div>
+
+          <!-- Day of week -->
+          <div class="form-group d-none" id="dateDayGroup">
+            <label class="form-label" for="filterDayOfWeek">Day of Week</label>
+            <select class="form-select" id="filterDayOfWeek">
+              <option value="">All Days</option>
+              <option>Monday</option>
+              <option>Tuesday</option>
+              <option>Wednesday</option>
+              <option>Thursday</option>
+              <option>Friday</option>
+              <option>Saturday</option>
+              <option>Sunday</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="filterMember">Member</label>
+            <select class="form-select" id="filterMember">
+              <option value="">All Members</option>
+              <!-- Populated by JS -->
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="filterMeal">Meal</label>
+            <select class="form-select" id="filterMeal">
+              <option value="">All Meals</option>
+              <option>Breakfast</option>
+              <option>Lunch</option>
+              <option>Dinner</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="filterStatus">Status</label>
+            <select class="form-select" id="filterStatus">
+              <option value="">All Statuses</option>
+              <option>Eat</option>
+              <option>Not Eat</option>
+              <option>Informed</option>
+            </select>
+          </div>
+
+          <div class="filter-actions">
+            <button class="btn btn-primary" id="btnSearch" type="button">🔍 Search</button>
+            <button class="btn btn-secondary" id="btnReset" type="button">✕ Reset</button>
+          </div>
+
+        </div>
+      </div>
+      <!-- /filter panel -->
+
+      <!-- Results -->
+      <div class="results-card">
+        <div class="results-header">
+          <span class="card-title">Results</span>
+          <span class="results-count" id="resultCount" aria-live="polite"></span>
+        </div>
+
+        <div class="table-wrapper">
+          <table class="data-table history-table" aria-label="Historical meal records">
+            <thead>
+              <tr>
+                <th class="col-date"   scope="col">Date</th>
+                <th class="col-day"    scope="col">Day</th>
+                <th class="col-member" scope="col">Member</th>
+                <th class="col-meal"   scope="col">Meal</th>
+                <th class="col-status" scope="col">Status</th>
+                <th class="col-saved"  scope="col">Saved At</th>
+                <th class="col-by"     scope="col">Saved By</th>
+              </tr>
+            </thead>
+            <tbody id="historyTableBody">
+              <tr>
+                <td colspan="7">
+                  <div class="empty-state">
+                    <div class="empty-icon">📭</div>
+                    <div class="empty-title">Set filters and click Search</div>
+                    <div class="empty-subtitle">Use quick filters or set custom date ranges above.</div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="pagination" id="pagination" aria-label="Pagination" role="navigation"></div>
+      </div>
+      <!-- /results -->
+
+    </div>
+    <!-- /tab records -->
+
+    <!-- ═══════════════════════ TAB 2: Day Report ═══════════════════ -->
+    <div class="tab-panel" id="tabDayReport" role="tabpanel" aria-labelledby="tab-day">
+
+      <div class="day-report-header">
+        <div class="form-group day-report-date-input">
+          <label class="form-label" for="dayReportDate">Select Date</label>
+          <input type="date" class="form-input" id="dayReportDate" aria-label="Day report date">
+        </div>
+        <div style="padding-top:24px">
+          <button class="btn btn-primary" id="btnDayReport" type="button">📅 Generate Report</button>
+        </div>
+      </div>
+
+      <div id="dayReportResult">
+        <div class="empty-state">
+          <div class="empty-icon">📅</div>
+          <div class="empty-title">Select a date to generate a day report</div>
+          <div class="empty-subtitle">Shows meal counts and member-level detail for the selected date.</div>
+        </div>
+      </div>
+
+    </div>
+    <!-- /tab day report -->
+
+    <!-- ═══════════════════════ TAB 3: Month Report ═════════════════ -->
+    <div class="tab-panel" id="tabMonthReport" role="tabpanel" aria-labelledby="tab-month">
+
+      <div class="month-report-header">
+        <div class="month-report-controls">
+          <div class="form-group">
+            <label class="form-label" for="monthInput">Select Month</label>
+            <input type="month" class="form-input" id="monthInput" aria-label="Month for report" style="min-width:180px">
+          </div>
+          <div style="padding-top:24px">
+            <button class="btn btn-primary" id="btnMonthReport" type="button">📆 Generate Report</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="monthReportResult">
+        <div class="empty-state">
+          <div class="empty-icon">📆</div>
+          <div class="empty-title">Select a month to generate a report</div>
+          <div class="empty-subtitle">Shows overall statistics and a per-member breakdown.</div>
+        </div>
+      </div>
+
+    </div>
+    <!-- /tab month report -->
+
+  </main>
+
+  <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/history.js"></script>
+</body>
+</html>

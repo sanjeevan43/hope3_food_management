@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Members — Hope3 Food Manager</title>
+  <meta name="description" content="Manage team members for the Hope3 Food Management System.">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/members.css">
+</head>
+<body class="page-body">
+
+  <!-- Navigation -->
+  <nav class="nav" role="navigation" aria-label="Main navigation">
+    <a href="dashboard.html" class="nav-brand" aria-label="Hope3 Food Manager Home">
+      <div class="nav-brand-icon" aria-hidden="true">🍽️</div>
+      <span class="nav-brand-text">Hope3 Food Manager</span>
+    </a>
+    <ul class="nav-links" role="list">
+      <li><a href="dashboard.html" class="nav-link"><span aria-hidden="true">📋</span><span>Dashboard</span></a></li>
+      <li><a href="history.html"   class="nav-link"><span aria-hidden="true">📜</span><span>History</span></a></li>
+      <li><a href="members.html"   class="nav-link active" aria-current="page"><span aria-hidden="true">👥</span><span>Members</span></a></li>
+    </ul>
+    <div class="nav-right">
+      <span class="nav-manager-name">Signed in as <span id="navManagerName">…</span></span>
+      <button class="btn-logout" id="btnLogout" type="button" aria-label="Logout">⏻ Logout</button>
+    </div>
+  </nav>
+
+  <main class="main-content" id="main">
+
+    <div class="page-header">
+      <h1 class="page-title">Team Members</h1>
+      <p class="page-subtitle">Add, edit, and manage team member accounts.</p>
+    </div>
+
+    <!-- Info note -->
+    <div class="members-info">
+      <span aria-hidden="true">ℹ️</span>
+      <span>
+        <strong>Tip:</strong> Deactivating a member removes them from the daily dashboard without deleting their meal history.
+        Reactivate them at any time to restore access.
+      </span>
+    </div>
+
+    <!-- Actions bar -->
+    <div class="members-actions">
+      <div class="flex-center gap-md" style="flex-wrap:wrap;gap:8px">
+        <div class="search-wrap members-search">
+          <span class="search-icon" aria-hidden="true">🔍</span>
+          <input
+            type="search"
+            id="memberSearch"
+            class="form-input search-input"
+            placeholder="Search members…"
+            aria-label="Search members"
+          >
+        </div>
+        <div class="filter-bar" role="group" aria-label="Filter members">
+          <button class="filter-toggle active" data-filter="active" type="button">Active Only</button>
+          <button class="filter-toggle" data-filter="all" type="button">Show All</button>
+        </div>
+      </div>
+      <button class="btn btn-primary" id="btnAddMember" type="button">
+        <span aria-hidden="true">+</span> Add Member
+      </button>
+    </div>
+
+    <!-- Members table card -->
+    <div class="members-card">
+      <div class="members-card-header">
+        <span class="members-card-title">Team Members</span>
+        <span class="member-count" id="memberCount" aria-live="polite">—</span>
+      </div>
+
+      <div class="table-wrapper">
+        <table class="data-table members-table" aria-label="Team members list">
+          <thead>
+            <tr>
+              <th class="col-id"      scope="col">ID</th>
+              <th class="col-name"    scope="col">Name</th>
+              <th class="col-status"  scope="col">Status</th>
+              <th class="col-created" scope="col">Added On</th>
+              <th class="col-actions" scope="col">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="memberTableBody">
+            <!-- Populated by members.js -->
+            <tr>
+              <td colspan="5">
+                <div class="empty-state">
+                  <div class="empty-icon">⏳</div>
+                  <div class="empty-title">Loading…</div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ── Add / Edit Member Modal ─────────────────────────────────── -->
+  <div class="modal-overlay" id="memberModal" style="display:none"
+    role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modalTitle">Add New Member</h2>
+        <button class="modal-close" id="btnModalClose" type="button" aria-label="Close modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label" for="modalMemberName">Member Name <span aria-hidden="true">*</span></label>
+          <input
+            type="text"
+            id="modalMemberName"
+            class="form-input"
+            placeholder="Enter full name"
+            maxlength="60"
+            aria-required="true"
+            aria-describedby="modalNameError"
+          >
+          <p class="text-xs text-muted" style="margin-top:4px">Maximum 60 characters.</p>
+          <p class="text-sm" id="modalNameError" style="color:var(--color-error);margin-top:4px" role="alert"></p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="btnModalCancel" type="button">Cancel</button>
+        <button class="btn btn-primary"   id="btnModalSave"   type="button">Add Member</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/members.js"></script>
+</body>
+</html>

@@ -1,0 +1,216 @@
+/* ============================================================
+   login.css — Login page styles
+   Hope3 Food Management System
+   ============================================================ */
+
+body.login-page {
+  background: linear-gradient(135deg, #0F172A 0%, #1E3A5F 50%, #0F172A 100%);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+/* Background decoration */
+body.login-page::before {
+  content: '';
+  position: fixed;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(ellipse at 60% 40%, rgba(29,78,216,.12) 0%, transparent 60%),
+              radial-gradient(ellipse at 20% 80%, rgba(8,145,178,.08) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+/* ── Login card ─────────────────────────────────────────────── */
+.login-card {
+  background: rgba(255,255,255,.97);
+  border-radius: 20px;
+  box-shadow: 0 24px 64px rgba(0,0,0,.35);
+  width: 100%;
+  max-width: 420px;
+  padding: 48px 40px 40px;
+  position: relative;
+  z-index: 1;
+  animation: card-rise 0.4s ease;
+}
+
+@keyframes card-rise {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Logo area ──────────────────────────────────────────────── */
+.login-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 36px;
+  text-align: center;
+}
+
+.login-logo-icon {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #1D4ED8, #0891B2);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  margin-bottom: 16px;
+  box-shadow: 0 8px 24px rgba(29,78,216,.3);
+}
+
+.login-logo-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #0F172A;
+  letter-spacing: -0.4px;
+  margin-bottom: 4px;
+}
+
+.login-logo-sub {
+  font-size: 13px;
+  color: #64748B;
+}
+
+/* ── Form ───────────────────────────────────────────────────── */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.login-form .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.login-form .form-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.login-input-wrap {
+  position: relative;
+}
+
+.login-input-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9CA3AF;
+  font-size: 16px;
+  pointer-events: none;
+}
+
+.login-form .form-input {
+  padding: 11px 12px 11px 40px;
+  font-size: 15px;
+  border-radius: 10px;
+  border: 1.5px solid #E5E7EB;
+  background: #FAFAFA;
+  transition: all 0.18s ease;
+}
+
+.login-form .form-input:focus {
+  background: #fff;
+  border-color: #1D4ED8;
+  box-shadow: 0 0 0 3px rgba(29,78,216,.12);
+}
+
+/* ── Error message ──────────────────────────────────────────── */
+.login-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: #FEF2F2;
+  border: 1px solid #FECACA;
+  border-radius: 8px;
+  color: #DC2626;
+  font-size: 13.5px;
+  font-weight: 500;
+  display: none;
+}
+
+.login-error.visible { display: flex; }
+
+/* ── Submit button ──────────────────────────────────────────── */
+.login-submit {
+  width: 100%;
+  padding: 13px;
+  background: linear-gradient(135deg, #1D4ED8, #1E40AF);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  transition: all 0.18s ease;
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.login-submit:hover:not(:disabled) {
+  background: linear-gradient(135deg, #1E40AF, #1D4ED8);
+  box-shadow: 0 6px 20px rgba(29,78,216,.35);
+  transform: translateY(-1px);
+}
+
+.login-submit:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.login-submit .spinner-sm {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255,255,255,.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  display: none;
+}
+
+.login-submit.loading .spinner-sm { display: block; }
+.login-submit.loading .btn-text    { display: none; }
+
+/* ── Footer note ────────────────────────────────────────────── */
+.login-footer {
+  margin-top: 28px;
+  text-align: center;
+  font-size: 12px;
+  color: #9CA3AF;
+  border-top: 1px solid #F3F4F6;
+  padding-top: 20px;
+}
+
+/* ── Reason banner (session expired etc.) ───────────────────── */
+.login-reason {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: #FFFBEB;
+  border: 1px solid #FDE68A;
+  border-radius: 8px;
+  color: #D97706;
+  font-size: 13px;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 480px) {
+  .login-card { padding: 36px 24px 32px; }
+}

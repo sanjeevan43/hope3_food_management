@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login — Hope3 Food Manager</title>
+  <meta name="description" content="Manager login for the Hope3 Food Management System.">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/login.css">
+</head>
+<body class="login-page">
+
+  <div class="login-card" role="main">
+
+    <!-- Logo -->
+    <div class="login-logo">
+      <div class="login-logo-icon">🍽️</div>
+      <h1 class="login-logo-title">Hope3 Food Manager</h1>
+      <p class="login-logo-sub">Manager Portal · Sign in to continue</p>
+    </div>
+
+    <!-- Session expiry / reason banner -->
+    <div class="login-reason" id="reasonBanner" style="display:none">
+      <span>⚠️</span>
+      <span id="reasonText">Your session has expired. Please log in again.</span>
+    </div>
+
+    <!-- Error message -->
+    <div class="login-error" id="loginError" role="alert">
+      <span>✕</span>
+      <span id="loginErrorText">Invalid username or password.</span>
+    </div>
+
+    <!-- Login form -->
+    <form class="login-form" id="loginForm" autocomplete="on" novalidate>
+
+      <div class="form-group">
+        <label class="form-label" for="username">Username</label>
+        <div class="login-input-wrap">
+          <span class="login-input-icon" aria-hidden="true">👤</span>
+          <input
+            type="text"
+            id="username"
+            name="username"
+            class="form-input"
+            placeholder="Enter your username"
+            autocomplete="username"
+            required
+            aria-required="true"
+            aria-describedby="loginError"
+          >
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="password">Password</label>
+        <div class="login-input-wrap">
+          <span class="login-input-icon" aria-hidden="true">🔒</span>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            class="form-input"
+            placeholder="Enter your password"
+            autocomplete="current-password"
+            required
+            aria-required="true"
+            aria-describedby="loginError"
+          >
+        </div>
+      </div>
+
+      <button type="submit" class="login-submit" id="loginBtn">
+        <div class="spinner-sm" aria-hidden="true"></div>
+        <span class="btn-text">Sign In</span>
+      </button>
+
+    </form>
+
+    <div class="login-footer">
+      Manager access only · No public registration
+    </div>
+
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    // Show reason banner if redirected with ?reason=expired
+    (function() {
+      const params = new URLSearchParams(window.location.search);
+      const reason = params.get('reason');
+      if (reason === 'expired') {
+        document.getElementById('reasonBanner').style.display = 'flex';
+      }
+
+      // If already logged in, skip login
+      if (sessionStorage.getItem('fm_token')) {
+        window.location.replace('dashboard.html');
+      }
+    })();
+
+    // Login form handler
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const username  = document.getElementById('username').value.trim();
+      const password  = document.getElementById('password').value;
+      const btn       = document.getElementById('loginBtn');
+      const errorDiv  = document.getElementById('loginError');
+      const errorText = document.getElementById('loginErrorText');
+
+      if (!username || !password) {
+        errorText.textContent = 'Please enter both username and password.';
+        errorDiv.classList.add('visible');
+        return;
+      }
+
+      errorDiv.classList.remove('visible');
+      btn.classList.add('loading');
+      btn.disabled = true;
+
+      const result = await Auth.login(username, password);
+
+      btn.classList.remove('loading');
+      btn.disabled = false;
+
+      if (result.success) {
+        window.location.replace('dashboard.html');
+      } else {
+        errorText.textContent = result.error || 'Login failed. Please try again.';
+        errorDiv.classList.add('visible');
+        document.getElementById('password').value = '';
+        document.getElementById('password').focus();
+      }
+    });
+  </script>
+</body>
+</html>

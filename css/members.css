@@ -1,0 +1,197 @@
+/* ============================================================
+   members.css — Member Management page styles
+   Hope3 Food Management System
+   ============================================================ */
+
+/* ── Page actions bar ────────────────────────────────────────── */
+.members-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+  flex-wrap: wrap;
+}
+
+.members-search {
+  max-width: 300px;
+  flex: 1;
+}
+
+/* ── Members table card ─────────────────────────────────────── */
+.members-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.members-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.members-card-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.member-count {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  padding: 2px 10px;
+  font-weight: 600;
+}
+
+/* ── Members table ───────────────────────────────────────────── */
+.members-table .col-id      { width: 90px; min-width: 80px; }
+.members-table .col-name    { min-width: 140px; }
+.members-table .col-status  { width: 110px; text-align: center; }
+.members-table .col-created { min-width: 160px; }
+.members-table .col-actions { width: 160px; text-align: right; }
+
+.members-table td.col-status  { text-align: center; }
+.members-table td.col-actions { text-align: right; }
+
+/* Member name cell with avatar */
+.member-row-name {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.member-row-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1D4ED8, #0891B2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.member-row-avatar.inactive {
+  background: linear-gradient(135deg, #94A3B8, #CBD5E1);
+}
+
+.member-row-info {}
+.member-row-fullname {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.member-row-id {
+  font-size: 11.5px;
+  color: var(--color-text-muted);
+  font-family: 'Courier New', monospace;
+}
+
+/* Action buttons in table */
+.action-btns {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+.btn-action {
+  padding: 5px 11px;
+  font-size: 12.5px;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  border: 1px solid transparent;
+  transition: all var(--transition);
+}
+
+.btn-edit {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  border-color: rgba(29,78,216,.15);
+}
+.btn-edit:hover {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.btn-deactivate {
+  background: var(--color-not-eat-bg);
+  color: var(--color-not-eat-text);
+  border-color: var(--color-not-eat-border);
+}
+.btn-deactivate:hover {
+  background: var(--color-not-eat-text);
+  color: #fff;
+}
+
+.btn-activate {
+  background: var(--color-eat-bg);
+  color: var(--color-eat-text);
+  border-color: var(--color-eat-border);
+}
+.btn-activate:hover {
+  background: var(--color-eat-solid);
+  color: #fff;
+}
+
+/* Inactive member row */
+.members-table tbody tr.row-inactive {
+  opacity: 0.6;
+}
+
+/* ── Filter bar ──────────────────────────────────────────────── */
+.filter-bar {
+  display: flex;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+.filter-toggle {
+  padding: 5px 14px;
+  border-radius: var(--radius-full);
+  font-size: 12.5px;
+  font-weight: 600;
+  border: 1.5px solid var(--color-border-strong);
+  background: transparent;
+  color: var(--color-text-secondary);
+  transition: all var(--transition);
+}
+
+.filter-toggle:hover { border-color: var(--color-primary); color: var(--color-primary); }
+.filter-toggle.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+}
+
+/* ── Info panel ──────────────────────────────────────────────── */
+.members-info {
+  background: var(--color-info-bg);
+  border: 1px solid #BAE6FD;
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  font-size: 13px;
+  color: var(--color-info);
+  margin-bottom: var(--space-md);
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+/* ── Responsive ──────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .members-actions { flex-direction: column; align-items: stretch; }
+  .members-search  { max-width: 100%; }
+  .col-created, .col-id { display: none; }
+}
