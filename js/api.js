@@ -161,6 +161,34 @@ const API = (() => {
     return get('getMonthReport', { year, month });
   }
 
+  // ── Student endpoints (Attendance) ────────────────────────────
+
+  async function getStudents(includeInactive = false) {
+    return get('getStudents', { includeInactive: includeInactive ? 'true' : 'false' });
+  }
+
+  async function addStudent(name) {
+    return post('addStudent', { name });
+  }
+
+  async function editStudent(student_id, name) {
+    return post('editStudent', { student_id, name });
+  }
+
+  async function toggleStudent(student_id) {
+    return post('toggleStudent', { student_id });
+  }
+
+  // ── Attendance endpoints ─────────────────────────────────────
+
+  async function getAttendance(date) {
+    return get('getAttendance', { date });
+  }
+
+  async function saveAttendance(date, changes) {
+    return post('saveAttendance', { date, changes });
+  }
+
   // ── Public interface ─────────────────────────────────────────
   return {
     login,
@@ -176,6 +204,12 @@ const API = (() => {
     getHistory,
     getDayReport,
     getMonthReport,
+    getStudents,
+    addStudent,
+    editStudent,
+    toggleStudent,
+    getAttendance,
+    saveAttendance,
   };
 
 })();

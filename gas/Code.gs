@@ -47,6 +47,12 @@ function doGet(e) {
       case 'getMonthReport':
         return handleGetMonthReport(params, session);
 
+      case 'getStudents':
+        return handleGetStudents(params, session);
+
+      case 'getAttendance':
+        return handleGetAttendance(params, session);
+
       default:
         return errorResponse('Unknown action: ' + action, 400);
     }
@@ -110,6 +116,18 @@ function doPost(e) {
 
       case 'toggleMember':
         return handleToggleMember(requestData, session);
+
+      case 'addStudent':
+        return handleAddStudent(requestData, session);
+
+      case 'editStudent':
+        return handleEditStudent(requestData, session);
+
+      case 'toggleStudent':
+        return handleToggleStudent(requestData, session);
+
+      case 'saveAttendance':
+        return handleSaveAttendance(requestData, session);
 
       default:
         return errorResponse('Unknown action: ' + action, 400);

@@ -38,6 +38,14 @@ function setupDatabase() {
     {
       name:    CONFIG.SHEETS.ACTIVITY_LOG,
       headers: ['log_id','timestamp','manager_id','action','date','member_id','meal','old_status','new_status']
+    },
+    {
+      name:    CONFIG.SHEETS.STUDENTS,
+      headers: ['student_id','name','active','created_at']
+    },
+    {
+      name:    CONFIG.SHEETS.ATTENDANCE,
+      headers: ['attendance_id','date','student_id','status','updated_at']
     }
   ];
 

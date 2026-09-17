@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Attendance — Hope3 Food Manager</title>
+  <meta name="description" content="Track daily college attendance — mark students Present or Absent for any date.">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/attendance.css">
+</head>
+<body class="page-body">
+
+  <!-- Navigation -->
+  <nav class="nav" role="navigation" aria-label="Main navigation">
+    <a href="dashboard.html" class="nav-brand" aria-label="Hope3 Food Manager Home">
+      <div class="nav-brand-icon" aria-hidden="true">🍽️</div>
+      <span class="nav-brand-text">Hope3 Food Manager</span>
+    </a>
+
+    <ul class="nav-links" role="list">
+      <li>
+        <a href="dashboard.html" class="nav-link">
+          <span aria-hidden="true">📋</span>
+          <span>Dashboard</span>
+        </a>
+      </li>
+      <li>
+        <a href="history.html" class="nav-link">
+          <span aria-hidden="true">📜</span>
+          <span>History</span>
+        </a>
+      </li>
+      <li>
+        <a href="members.html" class="nav-link">
+          <span aria-hidden="true">👥</span>
+          <span>Members</span>
+        </a>
+      </li>
+      <li>
+        <a href="attendance.html" class="nav-link active" aria-current="page">
+          <span aria-hidden="true">🎓</span>
+          <span>Attendance</span>
+        </a>
+      </li>
+    </ul>
+
+    <div class="nav-right">
+      <span class="nav-manager-name">
+        Signed in as <span id="navManagerName">…</span>
+      </span>
+      <button class="btn-logout" id="btnLogout" type="button" aria-label="Logout">
+        <span aria-hidden="true">⏻</span> Logout
+      </button>
+    </div>
+  </nav>
+
+  <!-- Main content -->
+  <main class="main-content" id="main">
+
+    <!-- Page header -->
+    <div class="page-header">
+      <h1 class="page-title">College Attendance</h1>
+      <p class="page-subtitle">Mark daily attendance for students. Click a badge to toggle Present / Absent.</p>
+    </div>
+
+    <!-- Date Navigator -->
+    <div class="date-navigator" role="navigation" aria-label="Date navigation">
+      <button class="btn-nav-arrow" id="btnPrevDay" title="Previous day" aria-label="Go to previous day">&#8592;</button>
+
+      <div class="date-display" id="dateDisplay" title="Click to open date picker"
+           role="button" tabindex="0" aria-label="Selected date">
+        <div>
+          <div class="date-text" id="dateText">—</div>
+          <div class="date-day-label" id="dateDayLabel">—</div>
+        </div>
+        <span aria-hidden="true">📅</span>
+      </div>
+
+      <!-- Hidden date picker triggered by the display button -->
+      <input
+        type="date"
+        id="datePicker"
+        class="date-picker-input"
+        aria-label="Pick a date"
+        tabindex="-1"
+      >
+
+      <button class="btn-nav-arrow" id="btnNextDay" title="Next day" aria-label="Go to next day">&#8594;</button>
+      <button class="btn-today" id="btnToday" type="button">Today</button>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="att-summary-cards" role="region" aria-label="Attendance summary">
+
+      <div class="att-summary-card att-summary-card-total">
+        <div class="att-summary-icon" aria-hidden="true">🎓</div>
+        <div class="att-summary-info">
+          <div class="att-summary-value" id="sumTotal">—</div>
+          <div class="att-summary-label">Total Students</div>
+        </div>
+      </div>
+
+      <div class="att-summary-card att-summary-card-present">
+        <div class="att-summary-icon" aria-hidden="true">✅</div>
+        <div class="att-summary-info">
+          <div class="att-summary-value" id="sumPresent">—</div>
+          <div class="att-summary-label">Present</div>
+        </div>
+      </div>
+
+      <div class="att-summary-card att-summary-card-absent">
+        <div class="att-summary-icon" aria-hidden="true">❌</div>
+        <div class="att-summary-info">
+          <div class="att-summary-value" id="sumAbsent">—</div>
+          <div class="att-summary-label">Absent</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Unsaved Changes Banner -->
+    <div class="unsaved-banner" id="unsavedBanner" style="display:none" role="alert" aria-live="polite">
+      <div class="unsaved-text">
+        <span class="unsaved-icon" aria-hidden="true">⚠️</span>
+        <span id="unsavedCount">0 unsaved changes</span>
+        <span class="text-muted text-sm">— press Ctrl+S to save</span>
+      </div>
+      <div class="unsaved-actions">
+        <button class="btn btn-secondary btn-sm" id="btnCancel" type="button">Cancel</button>
+        <button class="btn btn-success btn-sm" id="btnSave" type="button">💾 Save Attendance</button>
+      </div>
+    </div>
+
+    <!-- Attendance Table Section -->
+    <div class="att-table-section" role="region" aria-label="Student attendance table">
+
+      <div class="att-table-header">
+        <div>
+          <div class="att-table-title">Daily Attendance</div>
+          <div class="att-table-subtitle">Click a badge to toggle status. Orange outline = unsaved change.</div>
+        </div>
+        <div class="att-table-actions">
+          <div class="search-wrap">
+            <span class="search-icon" aria-hidden="true">🔍</span>
+            <input
+              type="search"
+              id="studentSearch"
+              class="form-input search-input"
+              placeholder="Search student…"
+              aria-label="Search students"
+              style="width: 200px"
+            >
+          </div>
+          <button class="btn btn-primary btn-sm" id="btnManageStudents" type="button">
+            <span aria-hidden="true">👥</span> Manage Students
+          </button>
+        </div>
+      </div>
+
+      <!-- Bulk action bar -->
+      <div class="att-bulk-bar" role="group" aria-label="Bulk attendance actions">
+        <span class="att-bulk-label">Mark all:</span>
+        <button class="att-bulk-btn att-bulk-btn-present" id="btnMarkAllPresent" type="button">
+          ✓ All Present
+        </button>
+        <button class="att-bulk-btn att-bulk-btn-absent" id="btnMarkAllAbsent" type="button">
+          ✕ All Absent
+        </button>
+      </div>
+
+      <!-- Loading indicator -->
+      <div class="loading-overlay" id="tableLoading" style="display:none" aria-busy="true" aria-label="Loading attendance data">
+        <div class="spinner"></div>
+      </div>
+
+      <div class="table-wrapper" role="region" aria-label="Attendance table (scroll horizontally if needed)">
+        <table class="att-table" id="attTable" aria-label="Student attendance">
+          <thead>
+            <tr>
+              <th class="att-col-no"  scope="col">#</th>
+              <th class="att-col-name" scope="col">Student Name</th>
+              <th class="att-col-status" scope="col">Status</th>
+              <th class="att-col-actions" scope="col">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="attTableBody">
+            <!-- Populated by attendance.js -->
+            <tr>
+              <td colspan="4">
+                <div class="empty-state">
+                  <div class="empty-icon">⏳</div>
+                  <div class="empty-title">Loading…</div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+    <!-- /attendance table -->
+
+    <!-- Status legend -->
+    <div class="att-legend">
+      <span class="text-xs text-muted">Status legend:</span>
+      <span class="att-badge att-badge-present" style="cursor:default;pointer-events:none;font-size:12px;min-width:90px">✓ Present</span>
+      <span class="att-badge att-badge-absent"  style="cursor:default;pointer-events:none;font-size:12px;min-width:90px">✕ Absent</span>
+      <span class="att-badge att-badge-not-marked" style="cursor:default;pointer-events:none;font-size:12px;min-width:100px">○ Not Marked</span>
+    </div>
+
+  </main>
+
+  <!-- ── Manage Students Modal ──────────────────────────────────── -->
+  <div class="modal-overlay" id="manageModal" style="display:none"
+    role="dialog" aria-modal="true" aria-labelledby="manageModalTitle">
+    <div class="modal" style="max-width:560px">
+      <div class="modal-header">
+        <h2 class="modal-title" id="manageModalTitle">Manage Students</h2>
+        <button class="modal-close" id="btnManageClose" type="button" aria-label="Close modal">✕</button>
+      </div>
+      <div class="modal-body" style="padding-bottom:0">
+
+        <!-- Add student form -->
+        <div style="display:flex;gap:8px;align-items:flex-start;margin-bottom:var(--space-md)">
+          <div class="form-group" style="flex:1">
+            <label class="form-label" for="newStudentName">Student Name</label>
+            <input
+              type="text"
+              id="newStudentName"
+              class="form-input"
+              placeholder="Enter full name"
+              maxlength="60"
+              aria-required="true"
+              aria-describedby="newStudentError"
+            >
+            <p class="text-sm" id="newStudentError" style="color:var(--color-error);margin-top:4px" role="alert"></p>
+          </div>
+          <button class="btn btn-primary" id="btnAddStudent" type="button" style="margin-top:21px">
+            + Add
+          </button>
+        </div>
+
+        <!-- Students list -->
+        <div style="border-top:1px solid var(--color-border);max-height:320px;overflow-y:auto">
+          <table class="att-table" id="manageTable" aria-label="All students">
+            <thead>
+              <tr>
+                <th scope="col">Name</th>
+                <th scope="col" style="width:90px;text-align:center">Status</th>
+                <th scope="col" style="width:100px;text-align:center">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="manageTableBody">
+              <tr><td colspan="3"><div class="empty-state" style="padding:24px"><div class="empty-icon">⏳</div><div class="empty-title">Loading…</div></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="btnManageDone" type="button">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Edit Student Name Modal ───────────────────────────────── -->
+  <div class="modal-overlay" id="editStudentModal" style="display:none"
+    role="dialog" aria-modal="true" aria-labelledby="editStudentTitle">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title" id="editStudentTitle">Edit Student Name</h2>
+        <button class="modal-close" id="btnEditStudentClose" type="button" aria-label="Close modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label" for="editStudentName">Name</label>
+          <input
+            type="text"
+            id="editStudentName"
+            class="form-input"
+            placeholder="Enter full name"
+            maxlength="60"
+            aria-required="true"
+            aria-describedby="editStudentError"
+          >
+          <p class="text-sm" id="editStudentError" style="color:var(--color-error);margin-top:4px" role="alert"></p>
+        </div>
+        <input type="hidden" id="editStudentId">
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="btnEditStudentCancel" type="button">Cancel</button>
+        <button class="btn btn-primary"   id="btnEditStudentSave"   type="button">Save Name</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast notifications -->
+  <div class="toast-container" id="toastContainer" aria-live="polite" aria-label="Notifications"></div>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/attendance.js"></script>
+</body>
+</html>

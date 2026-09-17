@@ -22,7 +22,9 @@ var CONFIG = {
     MEMBERS:      'Members',
     MEAL_RECORDS: 'MealRecords',
     SESSIONS:     'Sessions',
-    ACTIVITY_LOG: 'ActivityLog'
+    ACTIVITY_LOG: 'ActivityLog',
+    STUDENTS:     'Students',
+    ATTENDANCE:   'Attendance'
   },
 
   // ── Allowed Values ────────────────────────────────────────
@@ -87,5 +89,24 @@ var CONFIG = {
     MEAL:       6,
     OLD_STATUS: 7,
     NEW_STATUS: 8
+  },
+
+  // Sheet: Students
+  // student_id | name | active | created_at
+  STUDENTS_COLS: {
+    STUDENT_ID: 0,
+    NAME:       1,
+    ACTIVE:     2,
+    CREATED_AT: 3
+  },
+
+  // Sheet: Attendance
+  // attendance_id | date | student_id | status | updated_at
+  ATTENDANCE_COLS: {
+    ATTENDANCE_ID: 0,
+    DATE:          1,
+    STUDENT_ID:    2,
+    STATUS:        3,
+    UPDATED_AT:    4
   }
 };

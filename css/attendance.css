@@ -1,0 +1,438 @@
+/* ============================================================
+   attendance.css — College Attendance Page Styles
+   Hope3 Food Management System
+   ============================================================ */
+
+/* ── Attendance Status Colours ──────────────────────────────── */
+:root {
+  --color-present-bg:     #DCFCE7;
+  --color-present-text:   #15803D;
+  --color-present-border: #86EFAC;
+  --color-present-solid:  #16A34A;
+
+  --color-absent-bg:      #FEE2E2;
+  --color-absent-text:    #DC2626;
+  --color-absent-border:  #FECACA;
+  --color-absent-solid:   #DC2626;
+
+  --color-not-marked-bg:     #F8FAFC;
+  --color-not-marked-text:   #94A3B8;
+  --color-not-marked-border: #CBD5E1;
+}
+
+/* ── Date Navigator (reused from dashboard) ─────────────────── */
+.date-navigator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-xl);
+  flex-wrap: wrap;
+}
+
+.btn-nav-arrow {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-surface);
+  font-size: 18px;
+  color: var(--color-text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition);
+  flex-shrink: 0;
+}
+
+.btn-nav-arrow:hover {
+  background: var(--color-primary);
+  color: #fff;
+  border-color: var(--color-primary);
+}
+
+.date-display {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 8px 20px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  min-width: 200px;
+  transition: all var(--transition);
+  box-shadow: var(--shadow-sm);
+}
+
+.date-display:hover {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(29,78,216,.10);
+}
+
+.date-text {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.date-day-label {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.date-picker-input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  width: 0;
+  height: 0;
+}
+
+.btn-today {
+  padding: 8px 16px;
+  background: var(--color-primary-light);
+  border: 1px solid rgba(29,78,216,.2);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-primary);
+  transition: all var(--transition);
+}
+
+.btn-today:hover {
+  background: var(--color-primary);
+  color: #fff;
+  border-color: var(--color-primary);
+}
+
+/* ── Summary Cards ──────────────────────────────────────────── */
+.att-summary-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-md);
+  margin-bottom: var(--space-xl);
+}
+
+@media (max-width: 640px) {
+  .att-summary-cards {
+    grid-template-columns: 1fr;
+  }
+}
+
+.att-summary-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  transition: box-shadow var(--transition);
+}
+
+.att-summary-card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.att-summary-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.att-summary-card-total .att-summary-icon  { background: #EFF6FF; }
+.att-summary-card-present .att-summary-icon { background: var(--color-present-bg); }
+.att-summary-card-absent .att-summary-icon  { background: var(--color-absent-bg); }
+
+.att-summary-info {}
+
+.att-summary-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--color-text);
+  line-height: 1.1;
+}
+
+.att-summary-card-present .att-summary-value { color: var(--color-present-text); }
+.att-summary-card-absent .att-summary-value  { color: var(--color-absent-text); }
+
+.att-summary-label {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  margin-top: 2px;
+}
+
+/* ── Unsaved Banner ─────────────────────────────────────────── */
+.unsaved-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding: 12px var(--space-lg);
+  background: var(--color-warning-bg);
+  border: 1px solid #FDE68A;
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-md);
+  animation: slide-down 0.2s ease;
+  flex-wrap: wrap;
+}
+
+@keyframes slide-down {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.unsaved-text {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-warning);
+}
+
+.unsaved-actions {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+/* ── Attendance Table Section ───────────────────────────────── */
+.att-table-section {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  position: relative;
+}
+
+.att-table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--color-border);
+  flex-wrap: wrap;
+}
+
+.att-table-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.att-table-subtitle {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  margin-top: 2px;
+}
+
+.att-table-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+/* Attendance table */
+.att-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.att-table th {
+  text-align: left;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  padding: 10px 20px;
+  background: var(--color-surface-alt);
+  border-bottom: 1px solid var(--color-border);
+  white-space: nowrap;
+}
+
+.att-table td {
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--color-border);
+  vertical-align: middle;
+}
+
+.att-table tbody tr:last-child td { border-bottom: none; }
+
+.att-table tbody tr {
+  transition: background var(--transition);
+}
+
+.att-table tbody tr:hover {
+  background: var(--color-surface-alt);
+}
+
+.att-col-no     { width: 48px; }
+.att-col-name   {}
+.att-col-status { width: 160px; text-align: center; }
+.att-col-actions { width: 80px; text-align: center; }
+
+.att-student-name {
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.att-student-id {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  margin-top: 2px;
+}
+
+/* ── Attendance Status Badges ───────────────────────────────── */
+.att-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 6px 18px;
+  border-radius: var(--radius-full);
+  font-size: 13px;
+  font-weight: 600;
+  border: 1.5px solid transparent;
+  cursor: pointer;
+  transition: all var(--transition);
+  min-width: 110px;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.att-badge:hover {
+  filter: brightness(0.93);
+  transform: scale(1.03);
+}
+
+.att-badge.changed {
+  outline: 2px solid var(--color-warning);
+  outline-offset: 1px;
+}
+
+.att-badge-present {
+  background: var(--color-present-bg);
+  color: var(--color-present-text);
+  border-color: var(--color-present-border);
+}
+
+.att-badge-absent {
+  background: var(--color-absent-bg);
+  color: var(--color-absent-text);
+  border-color: var(--color-absent-border);
+}
+
+.att-badge-not-marked {
+  background: var(--color-not-marked-bg);
+  color: var(--color-not-marked-text);
+  border-color: var(--color-not-marked-border);
+  border-style: dashed;
+}
+
+/* ── Action buttons inside table ────────────────────────────── */
+.att-row-btn {
+  background: none;
+  border: none;
+  padding: 5px;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-muted);
+  font-size: 15px;
+  transition: all var(--transition);
+  cursor: pointer;
+}
+
+.att-row-btn:hover {
+  background: var(--color-surface-alt);
+  color: var(--color-text);
+}
+
+/* ── Bulk action bar ────────────────────────────────────────── */
+.att-bulk-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-lg);
+  background: var(--color-surface-alt);
+  border-bottom: 1px solid var(--color-border);
+  flex-wrap: wrap;
+}
+
+.att-bulk-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-right: var(--space-xs);
+}
+
+.att-bulk-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 14px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 600;
+  border: 1.5px solid transparent;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.att-bulk-btn-present {
+  background: var(--color-present-bg);
+  color: var(--color-present-text);
+  border-color: var(--color-present-border);
+}
+.att-bulk-btn-present:hover { background: #bbf7d0; }
+
+.att-bulk-btn-absent {
+  background: var(--color-absent-bg);
+  color: var(--color-absent-text);
+  border-color: var(--color-absent-border);
+}
+.att-bulk-btn-absent:hover { background: #fecaca; }
+
+/* ── Legend ─────────────────────────────────────────────────── */
+.att-legend {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-top: var(--space-md);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* ── Students manage section ────────────────────────────────── */
+.att-manage-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+  flex-wrap: wrap;
+}
+
+/* ── Percentage badge ───────────────────────────────────────── */
+.att-pct {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+}
+
+.att-pct-high   { background: var(--color-present-bg); color: var(--color-present-text); }
+.att-pct-medium { background: var(--color-warning-bg); color: var(--color-warning); }
+.att-pct-low    { background: var(--color-absent-bg);  color: var(--color-absent-text); }

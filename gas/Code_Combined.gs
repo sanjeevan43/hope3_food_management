@@ -17,7 +17,9 @@ var CONFIG = {
     MEMBERS:      'Members',
     MEAL_RECORDS: 'MealRecords',
     SESSIONS:     'Sessions',
-    ACTIVITY_LOG: 'ActivityLog'
+    ACTIVITY_LOG: 'ActivityLog',
+    STUDENTS:     'Students',
+    ATTENDANCE:   'Attendance'
   },
 
   MEALS:    ['Breakfast', 'Lunch', 'Dinner'],
@@ -69,6 +71,21 @@ var CONFIG = {
     MEAL:       6,
     OLD_STATUS: 7,
     NEW_STATUS: 8
+  },
+
+  STUDENTS_COLS: {
+    STUDENT_ID: 0,
+    NAME:       1,
+    ACTIVE:     2,
+    CREATED_AT: 3
+  },
+
+  ATTENDANCE_COLS: {
+    ATTENDANCE_ID: 0,
+    DATE:          1,
+    STUDENT_ID:    2,
+    STATUS:        3,
+    UPDATED_AT:    4
   }
 };
 
@@ -971,6 +988,8 @@ function doGet(e) {
       case 'getHistory':     return handleGetHistory(params, session);
       case 'getDayReport':   return handleGetDayReport(params, session);
       case 'getMonthReport': return handleGetMonthReport(params, session);
+      case 'getStudents':    return handleGetStudents(params, session);
+      case 'getAttendance':  return handleGetAttendance(params, session);
       default:               return errorResponse('Unknown action: ' + action, 400);
     }
 
@@ -1009,12 +1028,16 @@ function doPost(e) {
     }
 
     switch (action) {
-      case 'logout':       return handleLogout(requestData);
-      case 'saveMeals':    return handleSaveMeals(requestData, session);
-      case 'addMember':    return handleAddMember(requestData, session);
-      case 'editMember':   return handleEditMember(requestData, session);
-      case 'toggleMember': return handleToggleMember(requestData, session);
-      default:             return errorResponse('Unknown action: ' + action, 400);
+      case 'logout':          return handleLogout(requestData);
+      case 'saveMeals':       return handleSaveMeals(requestData, session);
+      case 'addMember':       return handleAddMember(requestData, session);
+      case 'editMember':      return handleEditMember(requestData, session);
+      case 'toggleMember':    return handleToggleMember(requestData, session);
+      case 'addStudent':      return handleAddStudent(requestData, session);
+      case 'editStudent':     return handleEditStudent(requestData, session);
+      case 'toggleStudent':   return handleToggleStudent(requestData, session);
+      case 'saveAttendance':  return handleSaveAttendance(requestData, session);
+      default:                return errorResponse('Unknown action: ' + action, 400);
     }
 
   } catch (err) {
@@ -1048,6 +1071,14 @@ function setupDatabase() {
     {
       name:    CONFIG.SHEETS.ACTIVITY_LOG,
       headers: ['log_id','timestamp','manager_id','action','date','member_id','meal','old_status','new_status']
+    },
+    {
+      name:    CONFIG.SHEETS.STUDENTS,
+      headers: ['student_id','name','active','created_at']
+    },
+    {
+      name:    CONFIG.SHEETS.ATTENDANCE,
+      headers: ['attendance_id','date','student_id','status','updated_at']
     }
   ];
 
@@ -1125,4 +1156,193 @@ function createFirstManager() {
     'ID: ' + mgId + '\n\n' +
     'Now deploy as Web App to get your API URL.'
   );
+}
+
+// ── 9. COLLEGE ATTENDANCE ──────────────────────────────────────
+
+var ATTENDANCE_STATUSES = ['present', 'absent', 'not_marked'];
+
+function handleGetStudents(params, session) {
+  try {
+    var includeInactive = params.includeInactive === 'true';
+    var sheet    = getSheet(CONFIG.SHEETS.STUDENTS);
+    var data     = sheet.getDataRange().getValues();
+    var cols     = CONFIG.STUDENTS_COLS;
+    var students = [];
+
+    for (var i = 1; i < data.length; i++) {
+      var row    = data[i];
+      var active = row[cols.ACTIVE] === true || row[cols.ACTIVE] === 'TRUE';
+      if (!includeInactive && !active) continue;
+      students.push({
+        student_id: String(row[cols.STUDENT_ID]),
+        name:       String(row[cols.NAME]),
+        active:     active,
+        created_at: String(row[cols.CREATED_AT])
+      });
+    }
+    return successResponse({ students: students });
+  } catch (e) {
+    Logger.log('handleGetStudents error: ' + e.message);
+    return errorResponse('Failed to retrieve students.', 500);
+  }
+}
+
+function handleAddStudent(requestData, session) {
+  try {
+    var name = (requestData.name || '').trim();
+    if (!name) return errorResponse('Student name is required.', 400);
+    if (name.length > 60) return errorResponse('Student name is too long (max 60 chars).', 400);
+
+    var sheet = getSheet(CONFIG.SHEETS.STUDENTS);
+    var data  = sheet.getDataRange().getValues();
+    var cols  = CONFIG.STUDENTS_COLS;
+
+    for (var i = 1; i < data.length; i++) {
+      if (String(data[i][cols.NAME]).toLowerCase() === name.toLowerCase()) {
+        return errorResponse('A student named "' + name + '" already exists.', 400);
+      }
+    }
+
+    var studentId = generateId('STU', data.length - 1);
+    var now       = getISTNow();
+    sheet.appendRow([studentId, name, true, now]);
+    logActivity(session.managerId, 'ADD_STUDENT', '', studentId, '', '', name);
+    return successResponse({ student: { student_id: studentId, name: name, active: true, created_at: now } });
+  } catch (e) {
+    Logger.log('handleAddStudent error: ' + e.message);
+    return errorResponse('Failed to add student.', 500);
+  }
+}
+
+function handleEditStudent(requestData, session) {
+  try {
+    var studentId = (requestData.student_id || '').trim();
+    var newName   = (requestData.name || '').trim();
+    if (!studentId) return errorResponse('student_id is required.', 400);
+    if (!newName)   return errorResponse('New name is required.', 400);
+    if (newName.length > 60) return errorResponse('Name is too long (max 60 chars).', 400);
+
+    var sheet = getSheet(CONFIG.SHEETS.STUDENTS);
+    var data  = sheet.getDataRange().getValues();
+    var cols  = CONFIG.STUDENTS_COLS;
+
+    for (var i = 1; i < data.length; i++) {
+      if (String(data[i][cols.STUDENT_ID]) === studentId) {
+        var oldName = String(data[i][cols.NAME]);
+        sheet.getRange(i + 1, cols.NAME + 1).setValue(newName);
+        logActivity(session.managerId, 'EDIT_STUDENT', '', studentId, '', oldName, newName);
+        return successResponse({ student_id: studentId, name: newName });
+      }
+    }
+    return errorResponse('Student not found.', 404);
+  } catch (e) {
+    Logger.log('handleEditStudent error: ' + e.message);
+    return errorResponse('Failed to edit student.', 500);
+  }
+}
+
+function handleToggleStudent(requestData, session) {
+  try {
+    var studentId = (requestData.student_id || '').trim();
+    if (!studentId) return errorResponse('student_id is required.', 400);
+
+    var sheet = getSheet(CONFIG.SHEETS.STUDENTS);
+    var data  = sheet.getDataRange().getValues();
+    var cols  = CONFIG.STUDENTS_COLS;
+
+    for (var i = 1; i < data.length; i++) {
+      if (String(data[i][cols.STUDENT_ID]) === studentId) {
+        var wasActive = data[i][cols.ACTIVE] === true || data[i][cols.ACTIVE] === 'TRUE';
+        var nowActive = !wasActive;
+        sheet.getRange(i + 1, cols.ACTIVE + 1).setValue(nowActive);
+        var action = nowActive ? 'ACTIVATE_STUDENT' : 'DEACTIVATE_STUDENT';
+        logActivity(session.managerId, action, '', studentId, '', '', '');
+        return successResponse({ student_id: studentId, active: nowActive });
+      }
+    }
+    return errorResponse('Student not found.', 404);
+  } catch (e) {
+    Logger.log('handleToggleStudent error: ' + e.message);
+    return errorResponse('Failed to toggle student status.', 500);
+  }
+}
+
+function handleGetAttendance(params, session) {
+  try {
+    var date = (params.date || '').trim();
+    if (!isValidDate(date)) return errorResponse('Invalid or missing date.', 400);
+
+    var sheet = getSheet(CONFIG.SHEETS.ATTENDANCE);
+    var data  = sheet.getDataRange().getValues();
+    var cols  = CONFIG.ATTENDANCE_COLS;
+    var attendance = {};
+
+    for (var i = 1; i < data.length; i++) {
+      var row       = data[i];
+      var rowDate   = normalizeDate(row[cols.DATE]);
+      var studentId = String(row[cols.STUDENT_ID]);
+      var status    = String(row[cols.STATUS]);
+      if (rowDate === date) {
+        attendance[studentId] = status;
+      }
+    }
+    return successResponse({ date: date, attendance: attendance });
+  } catch (e) {
+    Logger.log('handleGetAttendance error: ' + e.message);
+    return errorResponse('Failed to retrieve attendance.', 500);
+  }
+}
+
+function handleSaveAttendance(requestData, session) {
+  try {
+    var date    = (requestData.date || '').trim();
+    var changes = requestData.changes || {};
+    if (!isValidDate(date)) return errorResponse('Invalid or missing date.', 400);
+
+    var changeKeys = Object.keys(changes);
+    if (changeKeys.length === 0) return successResponse({ saved: 0 });
+
+    for (var k = 0; k < changeKeys.length; k++) {
+      var st = changes[changeKeys[k]];
+      if (ATTENDANCE_STATUSES.indexOf(st) === -1) {
+        return errorResponse('Invalid status "' + st + '" for student ' + changeKeys[k], 400);
+      }
+    }
+
+    var sheet = getSheet(CONFIG.SHEETS.ATTENDANCE);
+    var data  = sheet.getDataRange().getValues();
+    var cols  = CONFIG.ATTENDANCE_COLS;
+    var now   = getISTNow();
+
+    // Index existing rows for this date
+    var existingRows = {};
+    for (var i = 1; i < data.length; i++) {
+      var rowDate = normalizeDate(data[i][cols.DATE]);
+      if (rowDate === date) {
+        existingRows[String(data[i][cols.STUDENT_ID])] = i + 1;
+      }
+    }
+
+    var savedCount = 0;
+    changeKeys.forEach(function(studentId) {
+      var newStatus = changes[studentId];
+      if (existingRows[studentId]) {
+        var rowNum = existingRows[studentId];
+        sheet.getRange(rowNum, cols.STATUS     + 1).setValue(newStatus);
+        sheet.getRange(rowNum, cols.UPDATED_AT + 1).setValue(now);
+      } else {
+        var currentRows = sheet.getLastRow();
+        var attId       = generateId('ATT', currentRows - 1);
+        sheet.appendRow([attId, date, studentId, newStatus, now]);
+      }
+      savedCount++;
+    });
+
+    logActivity(session.managerId, 'SAVE_ATTENDANCE', date, '', '', '', savedCount + ' record(s)');
+    return successResponse({ date: date, saved: savedCount });
+  } catch (e) {
+    Logger.log('handleSaveAttendance error: ' + e.message);
+    return errorResponse('Failed to save attendance.', 500);
+  }
 }
