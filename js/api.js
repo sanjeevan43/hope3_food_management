@@ -13,7 +13,7 @@
 const API = (() => {
 
   // ── Configuration ──────────────────────────────────────────
-  const GAS_URL = 'https://script.google.com/macros/s/AKfycbyS2HrzgMFiJrQQ6n3rL1dWFOYWOAvBNX1PbqKuPNAoYK5fS3EZlZeM2rkpX2TA0KHl/exec';
+  const GAS_URL = 'https://script.google.com/macros/s/AKfycbxWsM8eVEPL-bFJ_exLtjPWjmNlDjHmpbkwYgoresRg8cBFQBeBOpkHOVfG8Aafbf2m/exec';
 
   // ── Token management ────────────────────────────────────────
   function getToken() {
