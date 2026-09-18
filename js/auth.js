@@ -31,10 +31,14 @@ const Auth = (() => {
   function isTokenLikelyExpired() {
     const manager = getManager();
     if (!manager || !manager.expiresAt) return true;
-    // Parse IST string "YYYY-MM-DDTHH:mm:ss" — treat as UTC+5:30
-    const isoStr = manager.expiresAt.replace('T', ' ') + ' GMT+0530';
-    const expDate = new Date(isoStr);
-    return Date.now() > expDate.getTime();
+    let expStr = String(manager.expiresAt).trim();
+    if (expStr.indexOf('T') !== -1 && !/[+-]\d{2}:?\d{2}$|Z$/i.test(expStr)) {
+      expStr += '+05:30';
+    }
+    const expDate = new Date(expStr);
+    if (isNaN(expDate.getTime())) return true;
+    // 10 second safety buffer for network latency/clock skew
+    return Date.now() >= expDate.getTime() - 10000;
   }
 
   // ── Page protection ──────────────────────────────────────────

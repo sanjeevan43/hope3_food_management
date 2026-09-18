@@ -207,8 +207,33 @@ function getSpreadsheet() {
 function getSheet(sheetName) {
   var ss = getSpreadsheet();
   var sheet = ss.getSheetByName(sheetName);
-  if (!sheet) throw new Error('Sheet not found: ' + sheetName);
+  if (!sheet) {
+    sheet = ss.insertSheet(sheetName);
+    var defaultHeaders = getDefaultHeaders(sheetName);
+    if (defaultHeaders && defaultHeaders.length > 0) {
+      sheet.appendRow(defaultHeaders);
+    }
+  }
   return sheet;
+}
+
+function getDefaultHeaders(sheetName) {
+  if (sheetName === CONFIG.SHEETS.MANAGERS) {
+    return ['manager_id','username','password_hash','salt','name','active','created_at'];
+  } else if (sheetName === CONFIG.SHEETS.MEMBERS) {
+    return ['member_id','name','active','created_at'];
+  } else if (sheetName === CONFIG.SHEETS.MEAL_RECORDS) {
+    return ['record_id','date','member_id','meal','status','updated_at','updated_by'];
+  } else if (sheetName === CONFIG.SHEETS.SESSIONS) {
+    return ['session_id','manager_id','username','created_at','expires_at','active'];
+  } else if (sheetName === CONFIG.SHEETS.ACTIVITY_LOG) {
+    return ['log_id','timestamp','manager_id','action','date','member_id','meal','old_status','new_status'];
+  } else if (sheetName === CONFIG.SHEETS.STUDENTS) {
+    return ['student_id','name','active','created_at'];
+  } else if (sheetName === CONFIG.SHEETS.ATTENDANCE) {
+    return ['attendance_id','date','student_id','status','updated_at'];
+  }
+  return [];
 }
 
 function generateId(prefix, currentCount) {
@@ -302,8 +327,8 @@ function handleLogin(requestData) {
     var token     = generateToken();
     var now       = new Date();
     var expiresAt = addHours(now, CONFIG.SESSION_DURATION_HOURS);
-    var createdStr = formatDateIST(now, "yyyy-MM-dd'T'HH:mm:ss");
-    var expiresStr = formatDateIST(expiresAt, "yyyy-MM-dd'T'HH:mm:ss");
+    var createdStr = formatDateIST(now, "yyyy-MM-dd'T'HH:mm:ss+05:30");
+    var expiresStr = formatDateIST(expiresAt, "yyyy-MM-dd'T'HH:mm:ss+05:30");
 
     var sessSheet = getSheet(CONFIG.SHEETS.SESSIONS);
     sessSheet.appendRow([
@@ -382,13 +407,23 @@ function getSession(token) {
 
     for (var i = 1; i < data.length; i++) {
       var row = data[i];
-      var isActive = row[cols.ACTIVE] === true || row[cols.ACTIVE] === 'TRUE';
+      var isActive = row[cols.ACTIVE] === true || String(row[cols.ACTIVE]).toUpperCase() === 'TRUE';
 
-      if (row[cols.SESSION_ID] === token && isActive) {
+      if (String(row[cols.SESSION_ID]) === token && isActive) {
         var expVal = row[cols.EXPIRES_AT];
-        var expDate = expVal instanceof Date ? expVal : new Date(String(expVal).replace('T', ' ') + ' GMT+0530');
+        var expTime = 0;
 
-        if (new Date() > expDate) {
+        if (expVal instanceof Date) {
+          expTime = expVal.getTime();
+        } else if (expVal) {
+          var strVal = String(expVal).trim();
+          if (strVal.indexOf('T') !== -1 && !/[+-]\d{2}:?\d{2}$|Z$/i.test(strVal)) {
+            strVal += '+05:30';
+          }
+          expTime = new Date(strVal).getTime();
+        }
+
+        if (isNaN(expTime) || expTime === 0 || new Date().getTime() > expTime) {
           sheet.getRange(i + 1, cols.ACTIVE + 1).setValue(false);
           return null;
         }

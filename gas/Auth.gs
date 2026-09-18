@@ -53,8 +53,8 @@ function handleLogin(requestData) {
     var token     = generateToken();
     var now       = new Date();
     var expiresAt = addHours(now, CONFIG.SESSION_DURATION_HOURS);
-    var createdStr = formatDateIST(now, "yyyy-MM-dd'T'HH:mm:ss");
-    var expiresStr = formatDateIST(expiresAt, "yyyy-MM-dd'T'HH:mm:ss");
+    var createdStr = formatDateIST(now, "yyyy-MM-dd'T'HH:mm:ss+05:30");
+    var expiresStr = formatDateIST(expiresAt, "yyyy-MM-dd'T'HH:mm:ss+05:30");
 
     var sessSheet = getSheet(CONFIG.SHEETS.SESSIONS);
     sessSheet.appendRow([
@@ -156,16 +156,23 @@ function getSession(token) {
 
     for (var i = 1; i < data.length; i++) {
       var row = data[i];
-      var isActive = row[cols.ACTIVE] === true || row[cols.ACTIVE] === 'TRUE';
+      var isActive = row[cols.ACTIVE] === true || String(row[cols.ACTIVE]).toUpperCase() === 'TRUE';
 
-      if (row[cols.SESSION_ID] === token && isActive) {
-        // Parse expiry — stored as "YYYY-MM-DDTHH:mm:ss" (IST string)
-        // Convert to JS Date for comparison
-        var expiresStr = String(row[cols.EXPIRES_AT]);
-        var expDate    = new Date(expiresStr.replace('T', ' ') + ' GMT+0530');
+      if (String(row[cols.SESSION_ID]) === token && isActive) {
+        var expVal = row[cols.EXPIRES_AT];
+        var expTime = 0;
 
-        if (new Date() > expDate) {
-          // Expire the session in-place
+        if (expVal instanceof Date) {
+          expTime = expVal.getTime();
+        } else if (expVal) {
+          var strVal = String(expVal).trim();
+          if (strVal.indexOf('T') !== -1 && !/[+-]\d{2}:?\d{2}$|Z$/i.test(strVal)) {
+            strVal += '+05:30';
+          }
+          expTime = new Date(strVal).getTime();
+        }
+
+        if (isNaN(expTime) || expTime === 0 || new Date().getTime() > expTime) {
           sheet.getRange(i + 1, cols.ACTIVE + 1).setValue(false);
           return null;
         }

@@ -343,7 +343,7 @@
       modal.style.display = '';
       errEl.textContent = '';
       nameInp.value = '';
-      await loadStudents();
+      await loadManageStudents();
       renderManageTable();
     });
 
@@ -362,6 +362,17 @@
     nameInp.addEventListener('keydown', e => {
       if (e.key === 'Enter') addStudent(nameInp, errEl);
     });
+  }
+
+  async function loadManageStudents() {
+    try {
+      const res = await API.getStudents(true);
+      if (res.success && Array.isArray(res.students)) {
+        allStudents = res.students;
+      }
+    } catch (e) {
+      console.error('Failed to load students for manage modal:', e);
+    }
   }
 
   function renderManageTable() {

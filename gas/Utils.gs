@@ -123,12 +123,37 @@ function getSpreadsheet() {
   return SpreadsheetApp.openById(CONFIG.SPREADSHEET_ID);
 }
 
-/** Return a sheet by name. Throws if the sheet does not exist. */
+/** Return a sheet by name. If the sheet does not exist, automatically create it with default headers. */
 function getSheet(sheetName) {
   var ss = getSpreadsheet();
   var sheet = ss.getSheetByName(sheetName);
-  if (!sheet) throw new Error('Sheet not found: ' + sheetName);
+  if (!sheet) {
+    sheet = ss.insertSheet(sheetName);
+    var defaultHeaders = getDefaultHeaders(sheetName);
+    if (defaultHeaders && defaultHeaders.length > 0) {
+      sheet.appendRow(defaultHeaders);
+    }
+  }
   return sheet;
+}
+
+function getDefaultHeaders(sheetName) {
+  if (sheetName === CONFIG.SHEETS.MANAGERS) {
+    return ['manager_id','username','password_hash','salt','name','active','created_at'];
+  } else if (sheetName === CONFIG.SHEETS.MEMBERS) {
+    return ['member_id','name','active','created_at'];
+  } else if (sheetName === CONFIG.SHEETS.MEAL_RECORDS) {
+    return ['record_id','date','member_id','meal','status','updated_at','updated_by'];
+  } else if (sheetName === CONFIG.SHEETS.SESSIONS) {
+    return ['session_id','manager_id','username','created_at','expires_at','active'];
+  } else if (sheetName === CONFIG.SHEETS.ACTIVITY_LOG) {
+    return ['log_id','timestamp','manager_id','action','date','member_id','meal','old_status','new_status'];
+  } else if (sheetName === CONFIG.SHEETS.STUDENTS) {
+    return ['student_id','name','active','created_at'];
+  } else if (sheetName === CONFIG.SHEETS.ATTENDANCE) {
+    return ['attendance_id','date','student_id','status','updated_at'];
+  }
+  return [];
 }
 
 // ── ID Generation ─────────────────────────────────────────────
